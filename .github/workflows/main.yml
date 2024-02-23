@@ -44,9 +44,6 @@ jobs:
 
       - name: Build Docker image
         run: docker build -t ${{ secrets.DOCKER_USERNAME }}/myapp:${{ github.sha }} .
-      
-      - name: Tag Docker image
-        run: docker tag ${{ secrets.DOCKER_USERNAME }}/myapp:${{ github.sha }} myapp:latest
 
       - name: Push Docker image
         run: docker push ${{ secrets.DOCKER_USERNAME }}/myapp
