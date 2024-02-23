@@ -2,8 +2,8 @@ name: Continuous Delivery
 
 on:
   push:
-      branches:
-        - master    
+    branches:
+      - master    
   release:
 
 jobs:
@@ -20,9 +20,12 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
+          
+      - name: Get branch name
+        run: echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
 
       - name: Build Docker image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/myapp:${{ github.sha }} .
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/myapp:${{ env.BRANCH_NAME }}-${{ github.sha }} .
 
       - name: Push Docker image
         run: docker push ${{ secrets.DOCKER_USERNAME }}/myapp:${{ github.sha }}
@@ -32,6 +35,11 @@ jobs:
     if: github.event_name == 'release'
 
     steps:
+      - name: Check if Docker image exists
+        id: check_image
+        run: |
+          docker pull ${{ secrets.DOCKER_USERNAME }}/myapp:${{ env.BRANCH_NAME }}-${{ github.sha }} || echo "Docker image not found"
+      
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -40,9 +48,12 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
+          
+      - name: Get branch name
+        run: echo "BRANCH_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
-      - name: Tag Docker image with release version
-        run: docker tag ${{ secrets.DOCKER_USERNAME }}/myapp:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/myapp:${{ github.event.release.tag_name }}
-
-      - name: Push Docker image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/myapp:${{ github.event.release.tag_name }}
+      - name: Tag and push Docker image if exists
+        if: steps.check_image.run != 'Docker image not found'
+        run: |
+          docker tag ${{ secrets.DOCKER_USERNAME }}/myapp:${{ env.BRANCH_NAME }}-${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/myapp:${{ github.event.release.tag_name }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/myapp:${{ github.event.release.tag_name }}
