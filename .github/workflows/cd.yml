@@ -46,8 +46,8 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Get branch name
-        run: echo "BRANCH_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
-
+        run: echo "BRANCH_NAME=$(echo ${{ github.ref }} | sed 's|.*/||')" >> $GITHUB_ENV
+        
       - name: Check if Docker image exists
         id: check_image
         run: |
