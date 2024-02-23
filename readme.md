@@ -1,4 +1,4 @@
-La branch master est protégé
+La branch master est protégé (sans le require approval car je ne peux pas m'auto approve)
 
 docker build -t mon-app-blazor-wasm .
 
