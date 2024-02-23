@@ -25,7 +25,7 @@
 			@foreach (var item in forecast.list) {
 				<tr>
 					<td>@DateTimeOffset.FromUnixTimeSeconds(item.dt).ToString("yyyy-MM-dd HH:mm:ss")</td>
-					<td>@item.main.temp</td>
+					<td>@((FahrenheitToCelsius(item.main.temp)/10).ToString("#.##"))</td>
 					<td>@item.weather[0].description</td>
 					<td>@item.wind.speed</td>
 					<td>@item.clouds.all</td>
@@ -38,6 +38,9 @@
 
 @code {
 	private WeatherForecast? forecast;
+
+	// convert from Fahrenheit to Celsius
+	private double FahrenheitToCelsius(double fahrenheit) => (fahrenheit - 32) * 5 / 9;
 
 	protected override async Task OnInitializedAsync() {
 		forecast = await WeatherService.GetWeather("44.34", "10.99");
