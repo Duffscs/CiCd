@@ -13,3 +13,5 @@ note, le token d'api est en dur dans le appsettings.json, comme echang� lors d
 il n'est pas possible de le cacher �tant donn� que le code est execut� cot� client (cela n'a donc plus rien de secret)
 si on voulais le rendre dynamique il faudrait dans la ci injecter le token dans le fichier appsettings.json
 mais vous m'avez dit de ne pas le faire.
+
+https://hub.docker.com/repository/docker/duffscs/myapp/tags
