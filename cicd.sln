@@ -8,8 +8,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FF2D0734-C1CD-417D-86B4-4AA43598A92D}"
 	ProjectSection(SolutionItems) = preProject
 		.dockerignore = .dockerignore
+		.github\workflows\cd.yml = .github\workflows\cd.yml
+		.github\workflows\ci.yml = .github\workflows\ci.yml
 		dockerfile = dockerfile
-		.github\workflows\main.yml = .github\workflows\main.yml
 	EndProjectSection
 EndProject
 Global
