@@ -1,0 +1,73 @@
+name: Continuous Integration
+
+on:
+  push:
+      branches:
+        - main    
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build and test
+        run: dotnet test
+
+  docker-build-and-publish:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Docker Login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Build Docker image
+        run: docker build -t myapp:${{ github.sha }} .
+      
+      - name: Tag Docker image
+        run: docker tag myapp:${{ github.sha }} myapp:latest
+
+      - name: Push Docker image
+        run: docker push myapp
+
+  docker-publish-on-release:
+    runs-on: ubuntu-latest
+    needs: docker-build-and-publish
+    if: github.event_name == 'release'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Docker Login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Tag Docker image with release version
+        run: docker tag myapp:${{ github.sha }} myapp:${{ github.event.release.tag_name }}
+
+      - name: Push Docker image
+        run: docker push myapp:${{ github.event.release.tag_name }}

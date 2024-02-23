@@ -1,0 +1,47 @@
+﻿@page "/weather"
+@inject WeatherService WeatherService
+
+<PageTitle>Weather</PageTitle>
+
+<h1>Weather</h1>
+
+<p>This component demonstrates fetching data from the server.</p>
+
+@if (forecast == null) {
+	<p><em>Loading...</em></p>
+} else {
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Date</th>
+				<th>Temperature (°C)</th>
+				<th>Weather</th>
+				<th>Wind Speed (m/s)</th>
+				<th>Cloudiness (%)</th>
+				<th>Humidity (%)</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var item in forecast.list) {
+				<tr>
+					<td>@DateTimeOffset.FromUnixTimeSeconds(item.dt).ToString("yyyy-MM-dd HH:mm:ss")</td>
+					<td>@item.main.temp</td>
+					<td>@item.weather[0].description</td>
+					<td>@item.wind.speed</td>
+					<td>@item.clouds.all</td>
+					<td>@item.main.humidity</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+@code {
+	private WeatherForecast? forecast;
+
+	protected override async Task OnInitializedAsync() {
+		forecast = await WeatherService.GetWeather("44.34", "10.99");
+	}
+
+
+}
