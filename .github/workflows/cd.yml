@@ -45,17 +45,14 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
 
-      - name: Get branch name
-        run: echo "BRANCH_NAME=$(echo ${{ github.ref }} | sed 's|.*/||')" >> $GITHUB_ENV
-        
       - name: Check if Docker image exists
         id: check_image
         run: |
-          docker pull ${{ secrets.DOCKER_USERNAME }}/myapp:${{ env.BRANCH_NAME }}-${{ github.sha }} || echo "Docker image not found"
+          docker pull ${{ secrets.DOCKER_USERNAME }}/myapp:master-${{ github.sha }} || echo "Docker image not found"
       
 
       - name: Tag and push Docker image if exists
         if: steps.check_image.run != 'Docker image not found'
         run: |
-          docker tag ${{ secrets.DOCKER_USERNAME }}/myapp:${{ env.BRANCH_NAME }}-${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/myapp:${{ github.event.release.tag_name }}
+          docker tag ${{ secrets.DOCKER_USERNAME }}/myapp:master-${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/myapp:${{ github.event.release.tag_name }}
           docker push ${{ secrets.DOCKER_USERNAME }}/myapp:${{ github.event.release.tag_name }}
