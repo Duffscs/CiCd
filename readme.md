@@ -7,7 +7,7 @@ docker run -d -p 8080:80 mon-app-blazor-wasm
 http://localhost:8080/
 
 se rendre sur l'onglet weather
-ouvrir les dev tools et constater que l'une requete est parti vers l'api d'openweather
+ouvrir les dev tools et constater qu'une requete est parti vers l'api d'openweather
 
 note, le token d'api est en dur dans le appsettings.json, comme echang� lors du cours
 il n'est pas possible de le cacher �tant donn� que le code est execut� cot� client (cela n'a donc plus rien de secret)
